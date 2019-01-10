@@ -18,6 +18,10 @@
     # Market-cap weighted portfolios
     # The correlation matrix
     # The co-variance matrix
+    # Portfolio standard deviation
+    # Sharpe ratios
+    # The MSR portfolio
+    # The GMV portfolio
 
 
 
@@ -613,4 +617,106 @@ script.py> output:
 #     ⋅ The dot-multiplication operator
 
 # portfolio_weights and cov_mat_annual are available in your workspace.
+
+# Import numpy as np
+import numpy as np
+
+# Calculate the portfolio standard deviation
+portfolio_volatility = np.sqrt(np.dot(portfolio_weights.T, np.dot(cov_mat_annual, portfolio_weights)))
+print(portfolio_volatility)
+
+<script.py> output:
+    0.08931417642713807 (8.93%)
+
+
+
+
+
+
+
+### Sharpe ratios
+
+# The Sharpe ratio is a simple metric of risk adjusted return which was pioneered 
+# by William F. Sharpe. Sharpe ratio is useful to determine how much risk is being 
+# taken to achieve a certain level of return. In finance, you are always seeking 
+# ways to improve your Sharpe ratio, and the measure is very commonly quoted and 
+# used to compare investment strategies.
+
+# The original 1966 Sharpe ratio calculation is quite simple:
+
+# S=(Ra−rf)/σa
+
+# where:
+    # S: Sharpe Ratio
+    # Ra: Asset return
+    # rf: Risk-free rate of return. note: the interest rate on a three-month U.S. 
+    #        Treasury bill is often used as the risk-free rate for U.S.-based investors.
+    # σa: Asset volatility
+
+# The randomly generated portfolio is available as RandomPortfolios.
+
+# Risk free rate
+risk_free = 0
+
+# Calculate the Sharpe Ratio for each asset
+RandomPortfolios['Sharpe'] = (RandomPortfolios['Returns']-risk_free)/RandomPortfolios['Volatility']
+
+# Print the range of Sharpe ratios
+print(RandomPortfolios['Sharpe'].describe()[['min', 'max']])
+
+<script.py> output:
+    min    0.742884
+    max    2.270462
+    Name: Sharpe, dtype: float64
+
+
+
+
+
+
+
+### The MSR portfolio
+
+# The maximum Sharpe ratio, or MSR portfolio, which lies at the apex of the efficient 
+# frontier, can be constructed by looking for the portfolio with the highest Sharpe ratio.
+
+# Unfortunately, the MSR portfolio is often quite erratic. Even though the portfolio 
+# had a high historical Sharpe ratio, it doesn't guarantee that the portfolio will 
+# have a good Sharpe ratio moving forward.
+
+# Sort the portfolios by Sharpe ratio
+sorted_portfolios = RandomPortfolios.sort_values(by=['Sharpe'], ascending=False)
+
+# Extract the corresponding weights
+MSR_weights = sorted_portfolios.iloc[0, 0:numstocks]
+
+# Cast the MSR weights as a numpy array
+MSR_weights_array = np.array(MSR_weights)
+
+# Calculate the MSR portfolio returns
+StockReturns['Portfolio_MSR'] = StockReturns.iloc[:, 0:numstocks].mul(MSR_weights_array, axis=1).sum(axis=1)
+
+# Plot the cumulative returns
+cumulative_returns_plot(['Portfolio_EW', 'Portfolio_MCap', 'Portfolio_MSR'])
+
+see OptimizedPortfolioReturns1.svg
+# note: MSR portfolio underperforms both equal weigthed and market cap portfolios...
+# difficult to predict future returns by past performance
+
+
+
+
+
+
+
+### The GMV portfolio
+
+# The global minimum volatility portfolio, or GMV portfolio, is the portfolio with 
+# the lowest standard deviation (risk) and the highest return for the given risk level.
+
+# Returns are very hard to predict, but volatilities and correlations tend to be more 
+# stable over time. This means that the GMV portfolio often outperforms the MSR 
+# portfolios out of sample even though the MSR would outperform quite significantly 
+# in-sample. Of course, out of sample results are what really matters in finance.
+
 
