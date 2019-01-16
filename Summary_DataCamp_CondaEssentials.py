@@ -36,6 +36,7 @@
 # Chapter 4: Case Study on Using Environments
 
 	# Compatibility with different versions
+	# Updating a script
 
 
 
