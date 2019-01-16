@@ -1025,7 +1025,7 @@ dependencies:
 
 # To create an environment from file-name.yml, you can use the following command:
 
-conda env create --file file-name.yml
+conda env create --name ENVNAME --file FILENAME.yml
 
 # As a special convention, if you use the plain command conda env create 
 # without specifying a YAML file, it will assume you mean the file environment.yml 
