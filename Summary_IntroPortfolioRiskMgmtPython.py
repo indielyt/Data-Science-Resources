@@ -23,6 +23,11 @@
     # The MSR portfolio
     # The GMV portfolio
 
+# Chapter 3: Factor Investing
+
+    # Excess Returns
+    # Calculating beta using co-variance
+
 
 
 
@@ -718,5 +723,88 @@ see OptimizedPortfolioReturns1.svg
 # stable over time. This means that the GMV portfolio often outperforms the MSR 
 # portfolios out of sample even though the MSR would outperform quite significantly 
 # in-sample. Of course, out of sample results are what really matters in finance.
+
+# Sort the portfolios by volatility
+sorted_portfolios = RandomPortfolios.sort_values(by=['Volatility'], ascending=True)
+
+# Extract the corresponding weights
+GMV_weights = sorted_portfolios.iloc[0, 0:numstocks]
+
+# Cast the GMV weights as a numpy array
+GMV_weights_array = np.array(GMV_weights)
+
+# Calculate the GMV portfolio returns
+StockReturns['Portfolio_GMV'] = StockReturns.iloc[:, 0:numstocks].mul(GMV_weights_array, axis=1).sum(axis=1)
+
+# Plot the cumulative returns
+cumulative_returns_plot(['Portfolio_EW', 'Portfolio_MCap', 'Portfolio_MSR', 'Portfolio_GMV'])
+
+see GMVportfolio.svg
+# Note: The GMV portfolio tends to be the most stable optimization over time, but of course you can 
+# expect a lower volatility portfolio to have lower return than the benchmark market cap weighting method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######## Chapter 3: Factor Investing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Excess Returns
+
+# In order to perform a robust analysis on your portfolio returns, you must first 
+# subtract the risk-free rate of return from your portfolio returns. The portfolio 
+# return minus the risk-free rate of return is known as the Excess Portfolio Return.
+
+# In the United States, the risk-free rate has been close to 0 since the financial 
+# crisis (2008), but this step is crucial for other countries with higher risk-free rates 
+# such as Venezuela or Brazil.
+
+# The FamaFrenchData DataFrame is available in your workspace and contains the proper 
+# data for this exercise. The portfolio you will be working with is the equal-weighted 
+# portfolio from Chapter 2.
+
+# Calculate excess portfolio returns
+FamaFrenchData['Portfolio_Excess'] = FamaFrenchData['Portfolio'] - FamaFrenchData['RF']
+
+# Plot returns vs excess returns
+CumulativeReturns = ((1+FamaFrenchData[['Portfolio','Portfolio_Excess']]).cumprod()-1)
+CumulativeReturns.plot()
+plt.show()
+
+see excessReturns.svg
+# Note: Notice how the excess return is only slightly less? That's because the risk 
+# free rate has been so low!
+
+
+
+
+
+
+
+### Calculating beta using co-variance
 
 
